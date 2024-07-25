@@ -1,0 +1,10 @@
+[package]
+name = "TREDpractice"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+minifb = "0.27.0"
+rand = "0.8.5"
+serde = "1.0.204"
+serde_json = "1.0.120"
