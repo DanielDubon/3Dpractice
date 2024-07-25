@@ -33,6 +33,15 @@ impl Framebuffer {
         }
     }
 
+    // Add getter methods for width and height
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
     pub fn display(&self) {
         let mut window = Window::new("Maze", self.width, self.height, WindowOptions {
             resize: true,
@@ -45,5 +54,4 @@ impl Framebuffer {
                 .expect("Failed to update buffer");
         }
     }
-    
 }
