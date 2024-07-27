@@ -1,28 +1,42 @@
-use crate::player::Player;
-use crate::framebuffer::Framebuffer;
+use crate::Player;
 
-pub fn cast_ray(framebuffer: &mut Framebuffer, maze: &[Vec<char>], player: &Player, block_size: usize) {
-    let cos_angle = player.angle().cos();
-    let sin_angle = player.angle().sin();
+pub fn cast_ray(
+    maze: &Vec<Vec<char>>,
+    player: &Player,
+    buffer: &mut Vec<u32>,
+    window_width: usize,
+    window_height: usize,
+    cell_size: usize,
+) {
+    let mut x = player.x;
+    let mut y = player.y;
+    let mut distance = 0.0;
 
-    // Get player position in framebuffer coordinates
-    let player_x = (player.x() * block_size as f32) as usize;
-    let player_y = (player.y() * block_size as f32) as usize;
+    // Ajusta la velocidad del rayo reduciendo el incremento
+    let step_size = 0.1; // Paso más pequeño para mayor precisión y movimiento más lento
 
-    println!("Player Position: ({}, {}), Angle: {}", player_x, player_y, player.angle());
+    loop {
+        let cell_x = (x / cell_size as f32).floor() as usize;
+        let cell_y = (y / cell_size as f32).floor() as usize;
 
-    // Example ray casting logic
-    for d in 0..100 { // Example distance range
-        let x = (player_x as f32 + d as f32 * cos_angle) as usize;
-        let y = (player_y as f32 + d as f32 * sin_angle) as usize;
+        if cell_x >= maze[0].len() || cell_y >= maze.len() || maze[cell_y][cell_x] == '+' || maze[cell_y][cell_x] == '|' {
+            break;
+        }
 
-        // Print ray coordinates for debugging
-        println!("Ray Coordinates: ({}, {})", x, y);
+        let pixel_x = x as usize;
+        let pixel_y = y as usize;
 
-        // Ensure coordinates are within framebuffer bounds
-        if x < framebuffer.width() && y < framebuffer.height() {
-            framebuffer.set_current_color(0xFF0000); // Red for rays
-            framebuffer.draw_rect(x, y, 1, 1); // Draw a point for simplicity
+        if pixel_x < window_width && pixel_y < window_height {
+            buffer[pixel_y * window_width + pixel_x] = 0xFF00FF; // Color del rayo
+        }
+
+        x += player.angle.cos() * step_size;
+        y += player.angle.sin() * step_size;
+        distance += step_size;
+
+        // Añadimos un límite a la distancia para evitar bucles infinitos
+        if distance > 1000.0 {
+            break;
         }
     }
 }

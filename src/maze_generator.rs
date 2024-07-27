@@ -1,28 +1,9 @@
 use rand::seq::SliceRandom;
 use rand::Rng;
 
-#[derive(Debug, Clone)]
-pub enum CellType {
-    Wall,
-    Path,
-    Start,
-    Goal,
-}
-
-impl CellType {
-    pub fn color(&self) -> &'static str {
-        match self {
-            CellType::Wall => "RED",
-            CellType::Path => "WHITE",
-            CellType::Start => "GREEN",
-            CellType::Goal => "BLUE",
-        }
-    }
-}
-
 pub fn make_maze(w: usize, h: usize) -> String {
-    let mut vis = vec![vec![CellType::Wall; w]; h];
-    vis.push(vec![CellType::Wall; w + 1]);
+    let mut vis = vec![vec![0; w]; h];
+    vis.push(vec![1; w + 1]);
 
     let mut ver = vec![vec!["|  ".to_string(); w]; h];
     ver.push(vec!["|".to_string(); w + 1]);
@@ -30,8 +11,8 @@ pub fn make_maze(w: usize, h: usize) -> String {
     let mut hor = vec![vec!["+--".to_string(); w]; h + 1];
     hor.push(vec!["+".to_string(); w + 1]);
 
-    fn walk(x: usize, y: usize, vis: &mut Vec<Vec<CellType>>, ver: &mut Vec<Vec<String>>, hor: &mut Vec<Vec<String>>) {
-        vis[y][x] = CellType::Path;
+    fn walk(x: usize, y: usize, vis: &mut Vec<Vec<i32>>, ver: &mut Vec<Vec<String>>, hor: &mut Vec<Vec<String>>) {
+        vis[y][x] = 1;
 
         let mut d = vec![
             (x as isize - 1, y as isize), 
@@ -47,7 +28,7 @@ pub fn make_maze(w: usize, h: usize) -> String {
             }
             let xx = xx as usize;
             let yy = yy as usize;
-            if let CellType::Path = vis[yy][xx] {
+            if vis[yy][xx] == 1 {
                 continue;
             }
             if xx == x {
